@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.vscode/**'
+      - '.idea/**'
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  UTC2-dLib-contracts-validate:
+    name: Run UTC2-dLib-contracts release
+    secrets: inherit
+    uses: ./.github/workflows/UTC2-dLib-contracts-ci.yaml
+
+  UTC2-dLib-contracts-release:
+    name: Run UTC2-dLib-contracts release
+    secrets: inherit
+    uses: ./.github/workflows/UTC2-dLib-contracts-cd.yaml
+    needs: UTC2-dLib-contracts-validate
+
+  UTC2-dLib-frontend-validate:
+    name: Run UTC2-dLib-frontend release
+    secrets: inherit
+    uses: ./.github/workflows/UTC2-dLib-frontend-ci.yaml
+
+  UTC2-dLib-frontend-release:
+    name: Run UTC2-dLib-frontend release
+    secrets: inherit
+    uses: ./.github/workflows/UTC2-dLib-frontend-cd.yaml
+    needs: UTC2-dLib-frontend-validate

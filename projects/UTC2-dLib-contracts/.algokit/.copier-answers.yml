@@ -1,0 +1,10 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 1.3.2
+_src_path: gh:algorandfoundation/algokit-python-template
+author_email: 150678985+FlamoDynamo@users.noreply.github.com
+author_name: FlamoDynamo
+contract_name: contract
+deployment_language: python
+preset_name: production
+project_name: UTC2-dLib-contracts
+

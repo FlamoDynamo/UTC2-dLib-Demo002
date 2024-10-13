@@ -1,0 +1,14 @@
+name: Pull Request validation
+
+on: [pull_request]
+
+
+jobs:
+  UTC2-dLib-contracts-ci:
+    name: Run UTC2-dLib-contracts validation
+    uses: ./.github/workflows/UTC2-dLib-contracts-ci.yaml
+
+  UTC2-dLib-frontend-ci:
+    name: Run UTC2-dLib-frontend validation
+    uses: ./.github/workflows/UTC2-dLib-frontend-ci.yaml
+
