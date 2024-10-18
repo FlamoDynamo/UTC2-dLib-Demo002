@@ -1,0 +1,77 @@
+#pragma version 5
+txn ApplicationID
+int 0
+==
+bnz main_l10
+txn OnCompletion
+int OptIn
+==
+bnz main_l9
+txn OnCompletion
+int NoOp
+==
+bnz main_l4
+err
+main_l4:
+txna ApplicationArgs 0
+byte "upload_file"
+==
+bnz main_l8
+txna ApplicationArgs 0
+byte "retrieve_file_cid"
+==
+bnz main_l7
+err
+main_l7:
+txn NumAppArgs
+int 1
+==
+assert
+int 1
+return
+main_l8:
+txn NumAppArgs
+int 2
+==
+assert
+txna ApplicationArgs 1
+len
+int 46
+<=
+assert
+byte "file_cid"
+txna ApplicationArgs 1
+app_global_put
+byte "file_count"
+byte "file_count"
+app_global_get
+int 1
++
+app_global_put
+txn Sender
+byte "user_file_cid"
+txna ApplicationArgs 1
+app_local_put
+txn Sender
+byte "user_file_count"
+txn Sender
+byte "user_file_count"
+app_local_get
+int 1
++
+app_local_put
+int 1
+return
+main_l9:
+txn Sender
+byte "user_file_count"
+int 0
+app_local_put
+int 1
+return
+main_l10:
+byte "file_count"
+int 0
+app_global_put
+int 1
+return

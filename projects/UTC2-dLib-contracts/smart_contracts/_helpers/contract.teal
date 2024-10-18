@@ -1,0 +1,136 @@
+#pragma version 5
+txn ApplicationID
+int 0
+==
+bnz main_l14
+txn OnCompletion
+int OptIn
+==
+bnz main_l13
+txn OnCompletion
+int NoOp
+==
+bnz main_l4
+err
+main_l4:
+txna ApplicationArgs 0
+byte "create_profile"
+==
+bnz main_l12
+txna ApplicationArgs 0
+byte "update_profile"
+==
+bnz main_l11
+txna ApplicationArgs 0
+byte "add_ebook"
+==
+bnz main_l10
+txna ApplicationArgs 0
+byte "add_videobook"
+==
+bnz main_l9
+err
+main_l9:
+txn NumAppArgs
+int 4
+==
+assert
+txn Sender
+byte "videobook"
+txn Sender
+byte "counter"
+app_local_get
+itob
+concat
+txna ApplicationArgs 1
+byte "|"
+concat
+txna ApplicationArgs 2
+concat
+byte "|"
+concat
+txna ApplicationArgs 3
+concat
+app_local_put
+txn Sender
+byte "counter"
+txn Sender
+byte "counter"
+app_local_get
+int 1
++
+app_local_put
+int 1
+return
+main_l10:
+txn NumAppArgs
+int 4
+==
+assert
+txn Sender
+byte "ebook"
+txn Sender
+byte "counter"
+app_local_get
+itob
+concat
+txna ApplicationArgs 1
+byte "|"
+concat
+txna ApplicationArgs 2
+concat
+byte "|"
+concat
+txna ApplicationArgs 3
+concat
+app_local_put
+txn Sender
+byte "counter"
+txn Sender
+byte "counter"
+app_local_get
+int 1
++
+app_local_put
+int 1
+return
+main_l11:
+txn NumAppArgs
+int 3
+==
+assert
+txn Sender
+byte "name"
+txna ApplicationArgs 1
+app_local_put
+txn Sender
+byte "email"
+txna ApplicationArgs 2
+app_local_put
+int 1
+return
+main_l12:
+txn NumAppArgs
+int 3
+==
+assert
+txn Sender
+byte "name"
+txna ApplicationArgs 1
+app_local_put
+txn Sender
+byte "email"
+txna ApplicationArgs 2
+app_local_put
+int 1
+return
+main_l13:
+txn Sender
+byte "counter"
+int 0
+app_local_put
+int 1
+return
+main_l14:
+int 1
+return

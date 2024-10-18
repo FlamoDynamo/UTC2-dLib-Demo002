@@ -1,36 +1,30 @@
-import logging
+from algosdk.v2client import algod
+from algosdk import mnemonic
+from algosdk import transaction
+from algosdk import account
 
-import algokit_utils
-from algosdk.v2client.algod import AlgodClient
-from algosdk.v2client.indexer import IndexerClient
+algod_address = "https://testnet-api.4160.nodely.dev/" # https://mainnet-api.4160.nodely.dev
+algod_token = ""
+mnemonic_phrase = "tree river prefer carry lift together charge priority cloud oxygen model twin hockey citizen deputy baby flip security bullet dry seat concert special about pride"
 
-logger = logging.getLogger(__name__)
+algod_client = algod.AlgodClient(algod_token, algod_address)
 
+def get_account_info():
+    account_private_key = mnemonic.to_private_key(mnemonic_phrase)
+    account_address = account.address_from_private_key(account_private_key)
+    return account_address, account_private_key
 
-# define deployment behaviour based on supplied app spec
-def deploy(
-    algod_client: AlgodClient,
-    indexer_client: IndexerClient,
-    app_spec: algokit_utils.ApplicationSpecification,
-    deployer: algokit_utils.Account,
-) -> None:
-    from smart_contracts.artifacts.contract.contract_client import (
-        ContractClient,
+def deploy_application(approval_program, clear_program):
+    account_address, account_private_key = get_account_info()
+
+    txn = transaction.ApplicationCreateTxn(
+        sender=account_address,
+        sp=algod_client.suggested_params(),
+        on_complete=transaction.OnComplete.NoOpOC,
+        approval_program=approval_program,
+        clear_program=clear_program
     )
 
-    app_client = ContractClient(
-        algod_client,
-        creator=deployer,
-        indexer_client=indexer_client,
-    )
-
-    app_client.deploy(
-        on_schema_break=algokit_utils.OnSchemaBreak.AppendApp,
-        on_update=algokit_utils.OnUpdate.AppendApp,
-    )
-    name = "world"
-    response = app_client.hello(name=name)
-    logger.info(
-        f"Called hello on {app_spec.contract.name} ({app_client.app_id}) "
-        f"with name={name}, received: {response.return_value}"
-    )
+    signed_txn = txn.sign(account_private_key)
+    txid = algod_client.send_transaction(signed_txn)
+    return txid

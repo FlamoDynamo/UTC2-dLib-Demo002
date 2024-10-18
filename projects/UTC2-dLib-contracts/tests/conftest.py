@@ -1,26 +1,17 @@
 import pytest
-from algokit_utils import (
-    get_algod_client,
-    get_default_localnet_config,
-    get_indexer_client,
-)
-from algosdk.v2client.algod import AlgodClient
-from algosdk.v2client.indexer import IndexerClient
+from algosdk.v2client import algod
+from algosdk import mnemonic, account
 
-# Uncomment if you want to load network specific or generic .env file
-# @pytest.fixture(autouse=True, scope="session")
-# def environment_fixture() -> None:
-#     env_path = Path(__file__).parent.parent / ".env"
-#     load_dotenv(env_path)
+@pytest.fixture(scope="module")
+def algod_client():
+    algod_address = "https://testnet-api.4160.nodely.dev/" # https://mainnet-api.4160.nodely.dev
+    algod_token = ""
+    
+    return algod.AlgodClient(algod_token, algod_address)
 
-
-@pytest.fixture(scope="session")
-def algod_client() -> AlgodClient:
-    # by default we are using localnet algod
-    client = get_algod_client(get_default_localnet_config("algod"))
-    return client
-
-
-@pytest.fixture(scope="session")
-def indexer_client() -> IndexerClient:
-    return get_indexer_client(get_default_localnet_config("indexer"))
+@pytest.fixture(scope="module")
+def account_info():
+    mnemonic_phrase = "tree river prefer carry lift together charge priority cloud oxygen model twin hockey citizen deputy baby flip security bullet dry seat concert special about pride"
+    account_private_key = mnemonic.to_private_key(mnemonic_phrase)
+    account_address = account.address_from_private_key(account_private_key)
+    return account_address, account_private_key
